@@ -50,7 +50,7 @@ class TCPClient(BaseException):
                 ackSocket.settimeout(self.timeoutInterval)
                 while largest_inorder_sequence_number < len(self.buffer) - 1:
                     ackSegment = ackSocket.recv(2048)
-                    sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(
+                    sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data = processor.disassemble_segment(
                         ackSegment)
                     if ack == 1 and sequenceNumber == largest_inorder_sequence_number + 1:
                         largest_inorder_sequence_number += 1
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     processor = segmentProcessor()
     for i in range(0, len(client.buffer)):
         print(client.buffer[i])
-        sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(
+        sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data = processor.disassemble_segment(
             client.buffer[i])
-        print(sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data)
+        print(sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data)
         print()

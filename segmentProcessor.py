@@ -37,7 +37,7 @@ class segmentProcessor:
 
         # fetch out the data from the segment
         data = codecs.decode(data, encoding="UTF-16")
-        return sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data
+        return sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data
 
     def calculateCheckSum(self, msg):
         checksum = 0
@@ -58,17 +58,14 @@ if __name__ == '__main__':
     print(segment)
     print()
 
-    sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(segment)
+    sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data = processor.disassemble_segment(segment)
     print("The header fields parsed from the byte stream:")
-    print(sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data)
+    print(sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data)
     print()
 
     msg = codecs.decode(segment, encoding="UTF-16")
     print("The checksum for the full byte stream:")
     print(processor.calculateCheckSum(msg))
-
-    segment1 = b'#(\xa0\xe8\x00\x00\x00\x03\x00\x00\x00\x03\x14\x00\x00 \xbc\xde\x00\x00\xff\xfen\x00t\x00.\x00 \x00W\x00h\x00e\x00n\x00'
-    msg1 = codecs.decode(segment1, encoding="UTF-16")
 
 
 

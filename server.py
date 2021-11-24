@@ -38,13 +38,12 @@ class TCPServer:
 
             if segment:
                 # disassemble the received segment
-                sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(segment)
+                sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data = processor.disassemble_segment(segment)
 
                 headerLength = 20
                 flags = (ack << 4) + fin
                 checksum = 0
                 urgPointer = 0
-                windowSize = 32
                 raw_header = struct.pack('!HHIIBBHHH', sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, 0, urgPointer)
                 raw_segment = raw_header + codecs.encode(data, encoding="UTF-16")
                 decoded_msg = codecs.decode(raw_segment, encoding="UTF-16")
