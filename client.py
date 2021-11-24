@@ -1,5 +1,6 @@
 import socket
 import sys
+import time
 from socket import *
 
 from segmentProcessor import segmentProcessor
@@ -7,7 +8,8 @@ from segmentProcessor import segmentProcessor
 class TCPClient(BaseException):
     def __init__(self, sourceFile, udplIP, udplPort, windowSizeInByte, ackPort):
         self.buffer = []
-        self.MSS = 16 # measured in byte, 1 character takes exactly 1 byte
+        self.sending_time_cache = []
+        self.MSS = 128 # measured in byte, 1 character takes exactly 1 byte
         self.headerSize = 20
 
         self.sourceFile = sourceFile
@@ -17,8 +19,8 @@ class TCPClient(BaseException):
         self.windowSizeInCount = windowSizeInByte // self.MSS
         self.ackPort = ackPort
 
-        self.timeoutInterval = 0.5
-        self.estimatedRTT = 0.5
+        self.timeoutInterval = 0.1
+        self.estimatedRTT = 0.1
         self.devRTT = 0
 
     def initiateCommunication(self):
@@ -44,6 +46,7 @@ class TCPClient(BaseException):
         rightBound = self.windowSizeInCount - 1
         for i in range(leftBound, rightBound + 1):
             sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
+            self.sending_time_cache.append(time.time())
 
         while largest_inorder_sequence_number < len(self.buffer) - 1:
             try:
@@ -56,10 +59,19 @@ class TCPClient(BaseException):
                         largest_inorder_sequence_number += 1
                         leftBound += 1
                         rightBound += 1
+                        # update timeout interval, we know the client received an inorder segment, record the current time, and look for the time when the segment was sent in the time buffer
+                        sendTime = self.sending_time_cache[largest_inorder_sequence_number]
+                        ackTime = time.time()
+                        sampleRTT = ackTime - sendTime
+                        self.estimatedRTT = (0.875) * self.estimatedRTT + (0.125) * sampleRTT
+                        self.devRTT = (0.75) * self.devRTT + (0.25) * abs(sampleRTT - self.estimatedRTT)
+                        self.timeoutInterval = self.estimatedRTT + 4 * self.devRTT
+
                         if rightBound < len(self.buffer):
                             ackSocket.sendto(self.buffer[rightBound], (self.udplIP, self.udplPort))
-                        ackSocket.settimeout(self.timeoutInterval)
-            except:
+                            self.sending_time_cache.append(time.time())
+                            ackSocket.settimeout(self.timeoutInterval)
+            except timeout:
                 for i in range(leftBound, rightBound + 1):
                     if i < len(self.buffer):
                         sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
@@ -100,7 +112,7 @@ if __name__ == '__main__':
     sourceFile = "source_file.txt"
     udplIP = "localhost"
     udplPort = 41192
-    windowSizeInByte = 64
+    windowSizeInByte = 512
     ackPort = 9000
 
     client = TCPClient(sourceFile, udplIP, udplPort, windowSizeInByte, ackPort)
