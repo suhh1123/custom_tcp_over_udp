@@ -7,7 +7,7 @@ from segmentProcessor import segmentProcessor
 class TCPClient(BaseException):
     def __init__(self, sourceFile, udplIP, udplPort, windowSizeInByte, ackPort):
         self.buffer = []
-        self.MSS = 8 # measured in byte, 1 character takes exactly 1 byte
+        self.MSS = 16 # measured in byte, 1 character takes exactly 1 byte
         self.headerSize = 20
 
         self.sourceFile = sourceFile
@@ -17,7 +17,7 @@ class TCPClient(BaseException):
         self.windowSizeInCount = windowSizeInByte // self.MSS
         self.ackPort = ackPort
 
-        self.timeoutInterval = 100
+        self.timeoutInterval = 0.5
         self.estimatedRTT = 0.5
         self.devRTT = 0
 
@@ -59,7 +59,7 @@ class TCPClient(BaseException):
                         if rightBound < len(self.buffer):
                             ackSocket.sendto(self.buffer[rightBound], (self.udplIP, self.udplPort))
                         ackSocket.settimeout(self.timeoutInterval)
-            except timeout:
+            except:
                 for i in range(leftBound, rightBound + 1):
                     if i < len(self.buffer):
                         sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     sourceFile = "source_file.txt"
     udplIP = "localhost"
     udplPort = 41192
-    windowSizeInByte = 32
+    windowSizeInByte = 64
     ackPort = 9000
 
     client = TCPClient(sourceFile, udplIP, udplPort, windowSizeInByte, ackPort)
