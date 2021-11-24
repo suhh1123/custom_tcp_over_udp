@@ -17,7 +17,7 @@ class TCPClient(BaseException):
         self.windowSizeInCount = windowSizeInByte // self.MSS
         self.ackPort = ackPort
 
-        self.timeoutInterval = 0.5
+        self.timeoutInterval = 100
         self.estimatedRTT = 0.5
         self.devRTT = 0
 
@@ -38,6 +38,7 @@ class TCPClient(BaseException):
         self.readInBuffer(file)
 
         # send segments with timeout mechanism (fixed timeout interval for now)
+        processor = segmentProcessor()
         largest_inorder_sequence_number = -1
         leftBound = 0
         rightBound = self.windowSizeInCount - 1
@@ -98,7 +99,7 @@ if __name__ == '__main__':
 
     sourceFile = "source_file.txt"
     udplIP = "localhost"
-    udplPort = 8000
+    udplPort = 41192
     windowSizeInByte = 32
     ackPort = 9000
 

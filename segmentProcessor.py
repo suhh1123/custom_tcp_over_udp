@@ -13,7 +13,7 @@ class segmentProcessor:
 
         # assemble raw segment (currently checksum == 0)
         raw_header = struct.pack('!HHIIBBHHH', sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, checksum, urgPointer)
-        raw_segment = raw_header + bytes(data, encoding="UTF-16")
+        raw_segment = raw_header + codecs.encode(data, encoding="UTF-16")
 
         # calculate checksum
         decoded_msg = codecs.decode(raw_segment, encoding="UTF-16")
@@ -21,7 +21,7 @@ class segmentProcessor:
 
         # reassemble raw segment (current checksum is calculated)
         full_header = struct.pack("!HHIIBBHHH", sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, checksum, urgPointer)
-        full_segment = full_header + bytes(data, encoding="UTF-16")
+        full_segment = full_header + codecs.encode(data, encoding="UTF-16")
 
         return full_segment
 
@@ -66,6 +66,9 @@ if __name__ == '__main__':
     msg = codecs.decode(segment, encoding="UTF-16")
     print("The checksum for the full byte stream:")
     print(processor.calculateCheckSum(msg))
+
+    segment1 = b'#(\xa0\xe8\x00\x00\x00\x03\x00\x00\x00\x03\x14\x00\x00 \xbc\xde\x00\x00\xff\xfen\x00t\x00.\x00 \x00W\x00h\x00e\x00n\x00'
+    msg1 = codecs.decode(segment1, encoding="UTF-16")
 
 
 

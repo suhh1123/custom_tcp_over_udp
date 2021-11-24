@@ -1,4 +1,6 @@
+import codecs
 import socket
+import struct
 import sys
 from socket import *
 
@@ -14,9 +16,9 @@ class TCPServer:
 
     def initiateCommunication(self):
         # initiate UDP sockets for receiving segments and sending ACKs
-        receiveSocket = socket(AF_INET, SOCK_STREAM)
+        receiveSocket = socket(AF_INET, SOCK_DGRAM)
         receiveSocket.bind(('localhost', self.listeningPort))
-        ackSocket = socket(AF_INET, SOCK_STREAM)
+        ackSocket = socket(AF_INET, SOCK_DGRAM)
 
         # build tunnel to destination file
         try:
@@ -35,11 +37,20 @@ class TCPServer:
             segment, clientAddress = receiveSocket.recvfrom(2048)
 
             if segment:
-                # check if segment has been corrupted
-                if (processor.calculateCheckSum(segment) == 0):
+                # disassemble the received segment
+                sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(segment)
 
-                    # disassemble the received segment
-                    sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(segment)
+                headerLength = 20
+                flags = (ack << 4) + fin
+                checksum = 0
+                urgPointer = 0
+                windowSize = 32
+                raw_header = struct.pack('!HHIIBBHHH', sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, 0, urgPointer)
+                raw_segment = raw_header + codecs.encode(data, encoding="UTF-16")
+                decoded_msg = codecs.decode(raw_segment, encoding="UTF-16")
+
+                # check if segment has been corrupted
+                if (processor.calculateCheckSum(decoded_msg) == checkSum):
 
                     if (sequenceNumber == largest_inorder_sequence_number + 1):
                         if fin:

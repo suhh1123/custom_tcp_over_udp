@@ -1,1 +1,1 @@
-My name is Haohua Su, currently a graduate student majoring in Electrical Engineering at Columbia University.
+Communication is important. When you do have limited time to finish your project, you need to talk to your manager and team members and identify the priority of your project because your colleague’s work might somehow depend on your work. You need to reach some agreement, like what kind of feature has higher priority. Based on that you tune your speed to make sure those features are available on time, then you could gradually refine the rest features later on.
