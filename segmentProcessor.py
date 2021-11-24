@@ -49,6 +49,7 @@ class segmentProcessor:
 
         return checksum
 
+# test
 if __name__ == '__main__':
     processor = segmentProcessor()
 
