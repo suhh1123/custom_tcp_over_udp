@@ -1,10 +1,8 @@
-import codecs
 import socket
 import sys
 from socket import *
 
 from segmentProcessor import segmentProcessor
-
 
 class TCPClient(BaseException):
     def __init__(self, sourceFile, udplIP, udplPort, windowSizeInByte, ackPort):
@@ -50,10 +48,10 @@ class TCPClient(BaseException):
             try:
                 ackSocket.settimeout(self.timeoutInterval)
                 while largest_inorder_sequence_number < len(self.buffer) - 1:
-                    ackSegment = ackSocket.recv(16)
+                    ackSegment = ackSocket.recv(2048)
                     sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, checkSum, data = processor.disassemble_segment(
                         ackSegment)
-                    if ack == largest_inorder_sequence_number + 1:
+                    if ack == 1 and sequenceNumber == largest_inorder_sequence_number + 1:
                         largest_inorder_sequence_number += 1
                         leftBound += 1
                         rightBound += 1
