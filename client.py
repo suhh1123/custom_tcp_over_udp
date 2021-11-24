@@ -96,7 +96,7 @@ if __name__ == '__main__':
     #     windowSizeInByte = int(sys.argv[4])
     #     ackPort = int(sys.argv[5])
     # except IndexError:
-    #     exit("Please type: $ sender.py [sending_filename] [remote_IP] [remote_port] [ack_port] [log_filename] [window_size]")
+    #     exit("Please type: $ client.py [sending_filename] [remote_IP] [remote_port] [ack_port] [log_filename] [window_size]")
 
     sourceFile = "source_file.txt"
     udplIP = "localhost"
