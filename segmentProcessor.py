@@ -3,39 +3,41 @@ import struct
 import sys
 
 class segmentProcessor:
+    def __init__(self):
+        self.headerLength = 20
 
     def assemble_segment(self, sourcePort, destPort, sequenceNumber, ackNumber, ack, fin, windowSize, data):
-        # construct the rest fields
-        headerLength = 20
+        # Construct the rest fields
+        headerLength = self.headerLength
         flags = (ack << 4) + fin
         checksum = 0
         urgPointer = 0
 
-        # assemble raw segment (currently checksum == 0)
+        # Assemble raw segment (currently checksum == 0)
         raw_header = struct.pack('!HHIIBBHHH', sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, checksum, urgPointer)
         raw_segment = raw_header + codecs.encode(data, encoding="UTF-16")
 
-        # calculate checksum
+        # Calculate checksum
         decoded_msg = codecs.decode(raw_segment, encoding="UTF-16")
         checksum = self.calculateCheckSum(decoded_msg)
 
-        # reassemble raw segment (current checksum is calculated)
+        # Reassemble raw segment (current checksum is calculated)
         full_header = struct.pack("!HHIIBBHHH", sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, checksum, urgPointer)
         full_segment = full_header + codecs.encode(data, encoding="UTF-16")
 
         return full_segment
 
     def disassemble_segment(self, segment):
-        # separate the header and payload in the segment
-        header = segment[:20]
-        data = segment[20:]
+        # Separate the header and payload in the segment
+        header = segment[:self.headerLength]
+        data = segment[self.headerLength:]
 
-        # fetch out the header fields from the received segment
+        # Fetch out the header fields from the received segment
         sourcePort, destPort, sequenceNumber, ackNumber, headerLength, flags, windowSize, checkSum, urgPointer = struct.unpack("!HHIIBBHHH", header)
         ack = 1 if (flags >> 4) == 1 else 0
         fin = 1 if flags & 0xff == 1 else 0
 
-        # fetch out the data from the segment
+        # Fetch out the data from the segment
         data = codecs.decode(data, encoding="UTF-16")
         return sourcePort, destPort, sequenceNumber, ackNumber, headerLength, ack, fin, windowSize, checkSum, data
 
@@ -46,7 +48,6 @@ class segmentProcessor:
             checksum = checksum + current
             checksum = (checksum >> 16) + (checksum & 0xffff)
         checksum = ~checksum & 0xffff
-
         return checksum
 
 # test
