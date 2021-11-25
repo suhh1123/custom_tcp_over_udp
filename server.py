@@ -97,7 +97,7 @@ if __name__ == '__main__':
         ackIP = str(sys.argv[3])
         ackPort = int(sys.argv[4])
     except IndexError:
-        exit("Please type: python server.py [filename] [listening_port] [address_for_acks] [port_for_acks]")
+        exit("Please type: python3 server.py [filename] [listening_port] [address_for_acks] [port_for_acks]")
 
     # destFile = "dest_file.txt"
     # listeningPort = 8000

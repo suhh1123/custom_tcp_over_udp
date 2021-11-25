@@ -146,7 +146,7 @@ if __name__ == '__main__':
         windowSizeInByte = int(sys.argv[4])
         ackPort = int(sys.argv[5])
     except IndexError:
-        exit("Please type: python client.py [filename] [adress_of_udpl] [port_number_of_udpl] [windowsize] [ack_port_number]")
+        exit("Please type: python3 client.py [filename] [adress_of_udpl] [port_number_of_udpl] [windowsize] [ack_port_number]")
 
     # sourceFile = "source_file.txt"
     # udplIP = "localhost"
