@@ -138,20 +138,20 @@ class TCPClient(BaseException):
 
 # test
 if __name__ == '__main__':
-    # try:
-    #     sourceFile = sys.argv[1]
-    #     udplIP = sys.argv[2]
-    #     udplPort = int(sys.argv[3])
-    #     windowSizeInByte = int(sys.argv[4])
-    #     ackPort = int(sys.argv[5])
-    # except IndexError:
-    #     exit("Please type: $ client.py [sending_filename] [remote_IP] [remote_port] [ack_port] [log_filename] [window_size]")
+    try:
+        sourceFile = sys.argv[1]
+        udplIP = sys.argv[2]
+        udplPort = int(sys.argv[3])
+        windowSizeInByte = int(sys.argv[4])
+        ackPort = int(sys.argv[5])
+    except IndexError:
+        exit("Please type: python client.py [filename] [adress_of_udpl] [port_number_of_udpl] [windowsize] [ack_port_number]")
 
-    sourceFile = "source_file.txt"
-    udplIP = "localhost"
-    udplPort = 41192
-    windowSizeInByte = 1536
-    ackPort = 9000
+    # sourceFile = "source_file.txt"
+    # udplIP = "localhost"
+    # udplPort = 41192
+    # windowSizeInByte = 1536
+    # ackPort = 9000
 
     client = TCPClient(sourceFile, udplIP, udplPort, windowSizeInByte, ackPort)
     client.initiateCommunication()

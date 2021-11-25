@@ -91,18 +91,18 @@ class TCPServer:
         log.write(content)
 
 if __name__ == '__main__':
-    # try:
-    #     destFile = sys.argv[1]
-    #     listeningPort = int(sys.argv[2])
-    #     ackIP = sys.argv[3]
-    #     ackPort = int(sys.argv[4])
-    # except IndexError:
-    #    exit("Please type: $ receiver.py [receiving_filename] [listening_port] [sender_IP] [sender_port] [log_filename] ")
+    try:
+        destFile = sys.argv[1]
+        listeningPort = int(sys.argv[2])
+        ackIP = str(sys.argv[3])
+        ackPort = int(sys.argv[4])
+    except IndexError:
+        exit("Please type: python server.py [filename] [listening_port] [address_for_acks] [port_for_acks]")
 
-    destFile = "dest_file.txt"
-    listeningPort = 8000
-    ackIP = "localhost"
-    ackPort = 9000
+    # destFile = "dest_file.txt"
+    # listeningPort = 8000
+    # ackIP = "localhost"
+    # ackPort = 9000
 
     server = TCPServer(destFile, listeningPort, ackIP, ackPort)
     server.initiateCommunication()
