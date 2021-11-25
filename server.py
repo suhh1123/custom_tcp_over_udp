@@ -5,7 +5,7 @@ import sys
 import datetime
 from socket import *
 
-from segmentProcessor import segmentProcessor
+from segment_processor import segmentProcessor
 
 
 class TCPServer:

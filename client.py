@@ -4,7 +4,7 @@ import sys
 import time
 from socket import *
 
-from segmentProcessor import segmentProcessor
+from segment_processor import segmentProcessor
 
 class TCPClient(BaseException):
     def __init__(self, sourceFile, udplIP, udplPort, windowSizeInByte, ackPort):
@@ -55,11 +55,12 @@ class TCPClient(BaseException):
 
         # Send all segments in the window in a row
         for i in range(leftBound, rightBound + 1):
-            sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
-            self.sending_time_cache.append(time.time())
-            # Write sending log
-            send_sourcePort, send_destPort, send_sequenceNumber, send_ackNumber, send_headerLength, send_ack, send_fin, send_windowSize, send_checkSum, send_data = processor.disassemble_segment(self.buffer[i])
-            self.writeLog(log, "SEND", send_sourcePort, send_destPort, send_sequenceNumber, send_ackNumber, send_headerLength, send_ack, send_fin, send_windowSize, send_checkSum, self.timeoutInterval)
+            if i < len(self.buffer):
+                sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
+                self.sending_time_cache.append(time.time())
+                # Write sending log
+                send_sourcePort, send_destPort, send_sequenceNumber, send_ackNumber, send_headerLength, send_ack, send_fin, send_windowSize, send_checkSum, send_data = processor.disassemble_segment(self.buffer[i])
+                self.writeLog(log, "SEND", send_sourcePort, send_destPort, send_sequenceNumber, send_ackNumber, send_headerLength, send_ack, send_fin, send_windowSize, send_checkSum, self.timeoutInterval)
 
         while largest_inorder_sequence_number < len(self.buffer) - 1:
             try:
