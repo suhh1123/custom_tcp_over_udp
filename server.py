@@ -61,7 +61,7 @@ class TCPServer:
                 # Check if segment has been corrupted and received in order
                 if (processor.calculateCheckSum(decoded_msg) == checkSum and sequenceNumber == largest_inorder_sequence_number + 1):
                     if fin:
-                        file.write(data.rstrip(' \t\r\n\0'))
+                        file.write(data.rstrip('\t\r\n\0'))
                         flag = False
                     else:
                         file.write(data)
