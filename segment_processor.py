@@ -1,6 +1,5 @@
 import codecs
 import struct
-import sys
 
 class segmentProcessor:
     def __init__(self):

@@ -10,7 +10,9 @@ FILE LISTS
 __________________________________________________________________________________________________________________________________________________________
 COMMAND RUNS GUIDELINE
 - WARNINGS
-  1. To make sure the program can run successfully, please run the command lines indicated in the "COMMAND"
+  1. To make sure the program can run successfully, please run the command lines indicated in the "COMMAND". The system has the ability to handle a worst
+     case, but it might take a longer time to process. Therefore, I choose a relatively light-weight contamination to show that the system can guarantee
+     data integrity in a short processing time.
   2. My program runs locally, meaning using localhost
   3. Please make sure to use python3 to run the program, some syntax are specific in python 3, I use python 3.7 particularly
 - STEP1: boot up the NEWUDPL server

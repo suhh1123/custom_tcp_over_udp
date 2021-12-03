@@ -7,7 +7,6 @@ from socket import *
 
 from segment_processor import segmentProcessor
 
-
 class TCPServer:
     def __init__(self, destFile, listeningPort, ackIP, ackPort):
         self.destFile = destFile

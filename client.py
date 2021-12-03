@@ -9,6 +9,7 @@ from segment_processor import segmentProcessor
 class TCPClient(BaseException):
     def __init__(self, sourceFile, udplIP, udplPort, windowSizeInByte, ackPort):
         self.buffer = []
+        self.isResend = []
         self.sending_time_cache = []
         self.MSS = 512 # measured in byte, 1 character takes exactly 1 byte
         self.headerSize = 20
@@ -19,8 +20,8 @@ class TCPClient(BaseException):
         self.windowSizeInByte = windowSizeInByte
         self.windowSizeInCount = windowSizeInByte // self.MSS
         self.ackPort = ackPort
-        self.timeoutInterval = 1
-        self.estimatedRTT = 1
+        self.timeoutInterval = 2
+        self.estimatedRTT = 2
         self.devRTT = 0
 
     def initiateCommunication(self):
@@ -57,6 +58,7 @@ class TCPClient(BaseException):
         for i in range(leftBound, rightBound + 1):
             if i < len(self.buffer):
                 sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
+                self.isResend.append(False)
                 self.sending_time_cache.append(time.time())
                 # Write sending log
                 send_sourcePort, send_destPort, send_sequenceNumber, send_ackNumber, send_headerLength, send_ack, send_fin, send_windowSize, send_checkSum, send_data = processor.disassemble_segment(self.buffer[i])
@@ -75,12 +77,13 @@ class TCPClient(BaseException):
 
                         # Update timeout interval, we know the client received an inorder segment, record the current
                         # time, and look for the time when the segment was sent in the sending time cache
-                        sendTime = self.sending_time_cache[largest_inorder_sequence_number]
-                        ackTime = time.time()
-                        sampleRTT = ackTime - sendTime
-                        self.estimatedRTT = 0.875 * self.estimatedRTT + 0.125 * sampleRTT
-                        self.devRTT = 0.75 * self.devRTT + 0.25 * abs(sampleRTT - self.estimatedRTT)
-                        self.timeoutInterval = self.estimatedRTT + 4 * self.devRTT
+                        if self.isResend[largest_inorder_sequence_number] == False:
+                            sendTime = self.sending_time_cache[largest_inorder_sequence_number]
+                            ackTime = time.time()
+                            sampleRTT = ackTime - sendTime
+                            self.estimatedRTT = 0.875 * self.estimatedRTT + 0.125 * sampleRTT
+                            self.devRTT = 0.75 * self.devRTT + 0.25 * abs(sampleRTT - self.estimatedRTT)
+                            self.timeoutInterval = self.estimatedRTT + 4 * self.devRTT
                         print("ack " + str(largest_inorder_sequence_number) + " received ")
 
                         # Write receiving log
@@ -88,6 +91,7 @@ class TCPClient(BaseException):
 
                         if rightBound < len(self.buffer):
                             ackSocket.sendto(self.buffer[rightBound], (self.udplIP, self.udplPort))
+                            self.isResend.append(False)
                             self.sending_time_cache.append(time.time())
                             ackSocket.settimeout(self.timeoutInterval)
 
@@ -98,6 +102,7 @@ class TCPClient(BaseException):
                 for i in range(leftBound, rightBound + 1):
                     if i < len(self.buffer):
                         sendSocket.sendto(self.buffer[i], (self.udplIP, self.udplPort))
+                        self.isResend[i] = True
                         self.sending_time_cache[i] = time.time()
 
                         # Write resending log
