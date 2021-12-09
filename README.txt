@@ -17,7 +17,7 @@ COMMAND RUNS GUIDELINE
   3. Please make sure to use python3 to run the program, some syntax are specific in python 3, I use python 3.7 particularly
 - STEP1: boot up the NEWUDPL server
   FORMAT: ./newudpl [-i source_host:port/*] [-o dest_host:port/*] [-L random_pack_loss_rate] [-B bit_error_rate] [-O out_of_order_rate] [-d delay]
-  COMMAND: ./newudpl -i 'localhost':'*' -o 'localhost':8000 -L 10 -B 10 -O 10 -d 1
+  COMMAND: ./newudpl -i 'localhost':'*' -o 'localhost':8000 -L 10 -B 10 -O 10 -d 2
 - STEP2: boot up the TCP server
   FORMAT: python3 [tcpserver] [file] [listening_port] [address_for_acks] [port_for_acks]
   COMMAND: python3 server.py dest_file.txt 8000 localhost 9000
